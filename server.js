@@ -21,17 +21,24 @@ app.post("/create-payment-sessions", async (req, res) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          amount: parseInt(amount) || 0, // Ensure it's a number
+          amount: parseInt(amount) || 0,
           currency: (currency || "GBP").toUpperCase(),
-          reference: reference || "REF-Default", // Fallback if empty
+          reference: reference || "REF-Default", // Order Reference
           billing: {
             address: {
               country: (country || "GB").toUpperCase(), 
             },
           },
-          risk: {
-            enabled: true,
-          },
+          items: [
+            {
+              name: "Guitar",
+              quantity: 1,
+              unit_price: parseInt(amount) || 0,
+              total_amount: parseInt(amount) || 0,
+              reference: "sku-guitar-001" // Product SKU
+            }
+          ],
+          risk: { enabled: true },
           payment_type: "Regular",
           processing_channel_id: "pc_f35zeezjelcuhn55zo3gdi2zpu",
           customer: {
@@ -46,15 +53,14 @@ app.post("/create-payment-sessions", async (req, res) => {
 
     const parsedPayload = await request.json();
 
-    // CRITICAL: Forward the exact error from Checkout.com to your browser
     if (!request.ok) {
-      console.error("Checkout.com API rejected the request:", parsedPayload);
+      console.error("Checkout.com API Error:", parsedPayload);
       return res.status(request.status).json(parsedPayload);
     }
 
     res.status(request.status).json(parsedPayload);
   } catch (error) {
-    console.error("Server Logic Error:", error);
+    console.error("Server Error:", error);
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
