@@ -1,27 +1,40 @@
-<div class="container">
-    <h1>Test Flow Integration</h1>
-    
-    <div class="main-wrapper">
-        <div id="config-view" class="side-panel">
-            <h3>Configuration</h3>
-            <div class="input-group">
-                <label>Amount (Minor Units)</label>
-                <input type="number" id="input-amount" value="10626">
-            </div>
-            <div class="input-group">
-                <label>Currency</label>
-                <input type="text" id="input-currency" value="GBP">
-            </div>
-            <div class="input-group">
-                <label>Country Code</label>
-                <input type="text" id="input-country" value="GB">
-            </div>
-            
-            <div class="button-group">
-                <button type="button" id="checkout-trigger" onclick="initializeCheckout()">Checkout</button>
-                <button type="button" class="reset-btn" onclick="location.reload()">Reset</button>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Test Flow Integration</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+    <div class="container">
+        <h1>Test Flow Integration</h1>
+        
+        <div class="main-wrapper">
+            <div id="config-view" class="side-panel">
+                <h3>Configuration</h3>
+                <div class="input-group">
+                    <label>Amount (Minor Units)</label>
+                    <input type="number" id="input-amount" value="10626">
+                </div>
+                <div class="input-group">
+                    <label>Currency</label>
+                    <input type="text" id="input-currency" value="GBP">
+                </div>
+                <div class="input-group">
+                    <label>Country Code</label>
+                    <input type="text" id="input-country" value="GB">
+                </div>
+                
+                <div class="button-group">
+                    <button type="button" id="checkout-trigger" onclick="initializeCheckout()">Checkout</button>
+                    <button type="button" class="reset-btn" onclick="location.reload()">Reset</button>
+                </div>
             </div>
         </div>
-
     </div>
-</div>
+
+    <script src="https://checkout-web-components.checkout.com/index.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
