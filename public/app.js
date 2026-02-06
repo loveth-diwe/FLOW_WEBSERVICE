@@ -10,13 +10,13 @@ window.initializeCheckout = async function() {
     return;
   }
 
+  // Capture all user inputs
   const amount = document.getElementById("input-amount").value;
   const currency = document.getElementById("input-currency").value;
   const country = document.getElementById("input-country").value;
-  const reference = document.getElementById("input-reference").value; // Added reference
+  const reference = document.getElementById("input-reference").value;
 
-  // UI Feedback
-  container.innerHTML = '<p class="placeholder-text">Loading payment methods...</p>';
+  // UI Feedback: Disable button to prevent double-clicks
   triggerBtn.disabled = true;
   triggerBtn.innerText = "Processing...";
 
@@ -24,14 +24,14 @@ window.initializeCheckout = async function() {
     const response = await fetch("/create-payment-sessions", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ amount, currency, country })
+      // Now correctly sending the reference to your server
+      body: JSON.stringify({ amount, currency, country, reference })
     });
     
     const paymentSession = await response.json();
     if (!response.ok) throw new Error("Payment session failed to load.");
 
-    container.innerHTML = ""; // Clear the loading text
-
+    // Initialize the Checkout SDK
     const checkout = await CheckoutWebComponents({
       publicKey: "pk_sbox_w5tsowjlb3s27oveipn5bmrs34f",
       environment: "sandbox",
@@ -42,12 +42,14 @@ window.initializeCheckout = async function() {
       }
     });
 
+    // Create and mount the flow component
     const flowComponent = checkout.create("flow");
     flowComponent.mount(container);
 
   } catch (error) {
     console.error(error);
-    container.innerHTML = `<p class="placeholder-text" style="color: #d9534f;">${error.message}</p>`;
+    // Error message only appears if the session fails
+    container.innerHTML = `<p style="color: #d9534f; text-align: center; margin-top: 50px;">${error.message}</p>`;
     triggerBtn.disabled = false;
     triggerBtn.innerText = "Checkout";
   }
