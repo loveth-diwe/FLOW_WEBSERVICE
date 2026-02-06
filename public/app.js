@@ -1,15 +1,21 @@
 /* global CheckoutWebComponents */
 
-// Make sure the function is defined globally
 window.initializeCheckout = async function() {
+  // These MUST match the IDs in your HTML
   const container = document.getElementById("flow-container");
   const triggerBtn = document.getElementById("checkout-trigger");
+
+  if (!container) {
+    console.error("Error: 'flow-container' not found in the HTML.");
+    return;
+  }
 
   const amount = document.getElementById("input-amount").value;
   const currency = document.getElementById("input-currency").value;
   const country = document.getElementById("input-country").value;
+  const reference = document.getElementById("input-reference").value; // Added reference
 
-  // Show loading state
+  // UI Feedback
   container.innerHTML = '<p class="placeholder-text">Loading payment methods...</p>';
   triggerBtn.disabled = true;
   triggerBtn.innerText = "Processing...";
@@ -22,10 +28,9 @@ window.initializeCheckout = async function() {
     });
     
     const paymentSession = await response.json();
-    if (!response.ok) throw new Error("Session creation failed");
+    if (!response.ok) throw new Error("Payment session failed to load.");
 
-    // Clear loading state
-    container.innerHTML = "";
+    container.innerHTML = ""; // Clear the loading text
 
     const checkout = await CheckoutWebComponents({
       publicKey: "pk_sbox_w5tsowjlb3s27oveipn5bmrs34f",
@@ -42,7 +47,7 @@ window.initializeCheckout = async function() {
 
   } catch (error) {
     console.error(error);
-    container.innerHTML = `<p class="placeholder-text" style="color: red;">Error: ${error.message}</p>`;
+    container.innerHTML = `<p class="placeholder-text" style="color: #d9534f;">${error.message}</p>`;
     triggerBtn.disabled = false;
     triggerBtn.innerText = "Checkout";
   }

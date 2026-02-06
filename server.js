@@ -9,8 +9,7 @@ app.use(express.json());
 const SECRET_KEY = process.env.CHECKOUT_SECRET_KEY;
 
 app.post("/create-payment-sessions", async (req, res) => {
-  const { amount, currency, country } = req.body;
-
+  const { amount, currency, country, reference } = req.body;
   // Hardcoded Base URL for your specific Render deployment
   const baseUrl = "https://flow-webservice-hns0.onrender.com";
 
@@ -26,7 +25,7 @@ app.post("/create-payment-sessions", async (req, res) => {
         body: JSON.stringify({
           amount: parseInt(amount), 
           currency: currency.toUpperCase(),
-          reference: "ORD-123AAA",
+          reference: reference, // Use the dynamic reference from the frontend,
           billing: {
             address: {
               country: country.toUpperCase(), 
