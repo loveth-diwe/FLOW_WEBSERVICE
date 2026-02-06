@@ -1,120 +1,56 @@
 const express = require("express");
-const { enabled } = require("express/lib/application");
 const fetch = require("node-fetch");
 const app = express();
 
 app.use(express.static("public"));
 app.use(express.json());
 
-// Insert your secret key here
-const SECRET_KEY = "sk_sbox_r22hwwp4zx3oi74v4jm4akk5tau";
+// Set this in Render's "Environment Variables" section
+const SECRET_KEY = process.env.CHECKOUT_SECRET_KEY;
 
-app.post("/create-payment-sessions", async (_req, res) => {
-  // Create a PaymentSession
-  const request = await fetch(
-    "https://api.sandbox.checkout.com/payment-sessions",
-    {
-      method: "POST",
-      headers: {
-        Authorization: SECRET_KEY,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        amount: 10626,
-        currency: "GBP",
-        reference: "ORD-123AAA",
-        payment_type: "Regular",
-        description: "Payment for Guitars and Amps",
-        processing_channel_id: "pc_f35zeezjelcuhn55zo3gdi2zpu",
-        payment_method_configuration: {
-          card:{
-            store_payment_details:"enabled"
-          }
-        },
-        processing:{
-          aft:false,
-          discount_amount:0,
-          locale:"en-GB",
-          shipping_amount:0,
-          tax_amount: 0,
-        },
-        billing_descriptor: {
-          name: "Loveth Test2",
-          city: "London",
-        },
-        customer: {
-          email: "checup@zohomail.eu",
-          name: "Loveth Test2",
-        },
-        shipping: {
-          address: {
-            address_line1: "123 High St.",
-            address_line2: "Flat 456",
-            city: "London",
-            zip: "SW1A 1AA",
-            country: "GB",
-          },
-          phone: {
-            number: "1234567890",
-            country_code: "+44",
-          },
-        },
-        billing: {
-          address: {
-            address_line1: "123 High St.",
-            address_line2: "Flat 456",
-            city: "London",
-            zip: "SW1A 1AA",
-            country: "GB",
-          },
-          phone: {
-            number: "017614284340",
-            country_code: "+49",
-          },
-        },
-        risk: {
-          enabled: true,
-        },
-        success_url: "http://localhost:3000/?status=succeeded",
-        failure_url: "http://localhost:3000/?status=failed",
-        metadata: {},
-      //   products: [
-      //     {
-      //   name: "Guitar",
-      //   quantity: 1,
-      //   price: 1635
-      //   },
-      //     {
-      //   name: "Amp",
-      //   quantity: 3,
-      //   price: 1635
-      //     }
-      // ],
-        items: [
-          {
-            name: "Guitar",
-            quantity: 1,
-            unit_price: 10626,
-            total_amount: 10626,
-            reference:"123456"
-          },
-          // {
-          //   name: "Amp",
-          //   quantity: 3,
-          //   unit_price: 1635,
-          //   total_amount: 4905,
-          // },
-        ],
-        //enabled_payment_methods: ["paypal", "card", "klarna","ideal","bancontact","eps","p24","multibanco"],
-      }),
-    }
-  );
+app.post("/create-payment-sessions", async (req, res) => {
+  const { amount, currency, country } = req.body;
 
-  const parsedPayload = await request.json();
+  // Determine host for redirect URLs
+  const protocol = req.headers['x-forwarded-proto'] || 'http';
+  const host = req.get('host');
+  const baseUrl = `${protocol}://${host}`;
 
-  res.status(request.status).send(parsedPayload);
+  try {
+    const request = await fetch(
+      "https://api.sandbox.checkout.com/payment-sessions",
+      {
+        method: "POST",
+        headers: {
+          Authorization: SECRET_KEY,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          amount: parseInt(amount), // Minor units (e.g., 1000 = 10.00)
+          currency: currency.toUpperCase(),
+          reference: "ORD-123AAA",
+          billing: {
+            address: {
+              country: country.toUpperCase(), // Determines payment method availability
+            },
+          },
+          customer: {
+            email: "test-user@example.com",
+            name: "Test User",
+          },
+          success_url: `${baseUrl}/?status=succeeded`,
+          failure_url: `${baseUrl}/?status=failed`,
+        }),
+      }
+    );
+
+    const parsedPayload = await request.json();
+    res.status(request.status).send(parsedPayload);
+  } catch (error) {
+    console.error("Session Error:", error);
+    res.status(500).send({ error: "Internal Server Error" });
+  }
 });
 
-app.listen(3000, () =>
-  console.log("Node server listening on port 3000: http://localhost:3000/")
-);
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

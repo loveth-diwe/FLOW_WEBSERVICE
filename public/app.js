@@ -1,65 +1,49 @@
 /* global CheckoutWebComponents */
-(async () => {
-  // Insert your public key here
-  const PUBLIC_KEY = "pk_sbox_w5tsowjlb3s27oveipn5bmrs34f";
 
-  const response = await fetch("/create-payment-sessions", { method: "POST" }); // Order
+async function initializeCheckout() {
+  const amount = document.getElementById("input-amount").value;
+  const currency = document.getElementById("input-currency").value;
+  const country = document.getElementById("input-country").value;
+
+  // 1. Create the Payment Session
+  const response = await fetch("/create-payment-sessions", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ amount, currency, country })
+  });
+  
   const paymentSession = await response.json();
 
   if (!response.ok) {
-    console.error("Error creating payment session", paymentSession);
+    console.error("Error creating session", paymentSession);
+    alert("Check console for error details");
     return;
   }
 
+  // 2. UI Transitions
+  document.getElementById("config-view").style.display = "none";
+  document.getElementById("checkout-view").style.display = "block";
+
+  // 3. Initialize Checkout SDK
   const checkout = await CheckoutWebComponents({
-    publicKey: PUBLIC_KEY,
+    publicKey: "pk_sbox_w5tsowjlb3s27oveipn5bmrs34f", // Your public key
     environment: "sandbox",
-    locale: "en-GB",
     paymentSession,
-    onReady: () => {
-      console.log("onReady");
-    },
+    onReady: () => console.log("Checkout is ready"),
     onPaymentCompleted: (_component, paymentResponse) => {
-      console.log("Create Payment with PaymentId: ", paymentResponse.id);
+      console.log("Payment Successful:", paymentResponse.id);
     },
-    onChange: (component) => {
-      console.log(
-        `onChange() -> isValid: "${component.isValid()}" for "${
-          component.type
-        }"`,
-      );
-    },
-    onError: (component, error) => {
-      console.log("onError", error, "Component", component.type);
-    },
+    onError: (err) => console.error("SDK Error:", err),
   });
 
   const flowComponent = checkout.create("flow");
-
   flowComponent.mount(document.getElementById("flow-container"));
-})();
-
-function triggerToast(id) {
-  var element = document.getElementById(id);
-  element.classList.add("show");
-
-  setTimeout(function () {
-    element.classList.remove("show");
-  }, 5000);
 }
 
+// Handle Toast Notifications for redirects
 const urlParams = new URLSearchParams(window.location.search);
-const paymentStatus = urlParams.get("status");
-const paymentId = urlParams.get("cko-payment-id");
-
-if (paymentStatus === "succeeded") {
-  triggerToast("successToast");
-}
-
-if (paymentStatus === "failed") {
-  triggerToast("failedToast");
-}
-
-if (paymentId) {
-  console.log("Create Payment with PaymentId: ", paymentId);
+if (urlParams.get("status") === "succeeded") {
+  document.getElementById("successToast")?.classList.add("show");
+} else if (urlParams.get("status") === "failed") {
+  document.getElementById("failedToast")?.classList.add("show");
 }
