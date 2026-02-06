@@ -29,6 +29,11 @@ app.post("/create-payment-sessions", async (req, res) => {
               country: (country || "GB").toUpperCase(), 
             },
           },
+          risk: {
+            enabled: true,
+          },
+          payment_type: "Regular",
+          processing_channel_id: "pc_f35zeezjelcuhn55zo3gdi2zpu",
           customer: {
             email: "test-user@example.com",
             name: "Test User",
