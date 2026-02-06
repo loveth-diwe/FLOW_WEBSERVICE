@@ -11,10 +11,8 @@ const SECRET_KEY = process.env.CHECKOUT_SECRET_KEY;
 app.post("/create-payment-sessions", async (req, res) => {
   const { amount, currency, country } = req.body;
 
-  // Determine host for redirect URLs
-  const protocol = req.headers['x-forwarded-proto'] || 'http';
-  const host = req.get('host');
-  const baseUrl = `${protocol}://${host}`;
+  // Hardcoded Base URL for your specific Render deployment
+  const baseUrl = "https://flow-webservice-hns0.onrender.com";
 
   try {
     const request = await fetch(
@@ -26,18 +24,19 @@ app.post("/create-payment-sessions", async (req, res) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          amount: parseInt(amount), // Minor units (e.g., 1000 = 10.00)
+          amount: parseInt(amount), 
           currency: currency.toUpperCase(),
           reference: "ORD-123AAA",
           billing: {
             address: {
-              country: country.toUpperCase(), // Determines payment method availability
+              country: country.toUpperCase(), 
             },
           },
           customer: {
             email: "test-user@example.com",
             name: "Test User",
           },
+          // Updated redirect URLs to point to your live domain
           success_url: `${baseUrl}/?status=succeeded`,
           failure_url: `${baseUrl}/?status=failed`,
         }),

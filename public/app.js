@@ -5,7 +5,9 @@ async function initializeCheckout() {
   const currency = document.getElementById("input-currency").value;
   const country = document.getElementById("input-country").value;
 
-  // 1. Create the Payment Session
+  // Clear placeholder text before mounting
+  document.getElementById("flow-container").innerHTML = "";
+
   const response = await fetch("/create-payment-sessions", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -13,37 +15,15 @@ async function initializeCheckout() {
   });
   
   const paymentSession = await response.json();
+  if (!response.ok) return console.error("Session Error", paymentSession);
 
-  if (!response.ok) {
-    console.error("Error creating session", paymentSession);
-    alert("Check console for error details");
-    return;
-  }
-
-  // 2. UI Transitions
-  document.getElementById("config-view").style.display = "none";
-  document.getElementById("checkout-view").style.display = "block";
-
-  // 3. Initialize Checkout SDK
   const checkout = await CheckoutWebComponents({
-    publicKey: "pk_sbox_w5tsowjlb3s27oveipn5bmrs34f", // Your public key
+    publicKey: "pk_sbox_w5tsowjlb3s27oveipn5bmrs34f",
     environment: "sandbox",
     paymentSession,
-    onReady: () => console.log("Checkout is ready"),
-    onPaymentCompleted: (_component, paymentResponse) => {
-      console.log("Payment Successful:", paymentResponse.id);
-    },
-    onError: (err) => console.error("SDK Error:", err),
+    onReady: () => console.log("Checkout is live!"),
   });
 
   const flowComponent = checkout.create("flow");
   flowComponent.mount(document.getElementById("flow-container"));
-}
-
-// Handle Toast Notifications for redirects
-const urlParams = new URLSearchParams(window.location.search);
-if (urlParams.get("status") === "succeeded") {
-  document.getElementById("successToast")?.classList.add("show");
-} else if (urlParams.get("status") === "failed") {
-  document.getElementById("failedToast")?.classList.add("show");
 }

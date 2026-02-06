@@ -1,73 +1,37 @@
-/* Keep your original Normalize section at the top */
-
-/* Add these Layout & Form Styles */
-.container {
-  background: #f9f9f9;
-  padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
-  margin-top: 2rem;
+/* Container and Layout */
+.main-wrapper {
+    display: flex;
+    gap: 24px;
+    align-items: flex-start;
+    margin-top: 20px;
+    flex-wrap: wrap; /* Supports mobile wrapping */
 }
 
-.hidden {
-  display: none !important;
+.side-panel {
+    flex: 1;
+    min-width: 320px;
+    background: #ffffff;
+    border: 1px solid #e0e6ed;
+    border-radius: 12px;
+    padding: 30px;
+    min-height: 520px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
-h3 {
-  margin-top: 0;
-  color: #333;
-}
+/* Typography */
+h1 { font-size: 24px; color: #111; margin-bottom: 8px; }
+h3 { font-size: 18px; color: #444; margin-bottom: 24px; border-bottom: 1px solid #eee; padding-bottom: 10px; }
 
-.input-group {
-  margin-bottom: 1.5rem;
-}
+/* Form Elements */
+.input-group { margin-bottom: 20px; }
+label { font-size: 11px; text-transform: uppercase; color: #999; font-weight: bold; margin-bottom: 6px; display: block; }
+input { background: #fcfcfc; border: 1px solid #dcdfe6; padding: 12px; border-radius: 6px; width: 100%; font-size: 16px; transition: border 0.2s; }
+input:focus { border-color: #0070ba; outline: none; }
 
-label {
-  display: block;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: #666;
-  margin-bottom: 0.5rem;
-}
+/* Buttons */
+.button-group { display: flex; gap: 10px; flex-direction: column; }
+button#checkout-trigger { background: #0070ba; color: white; font-weight: 600; padding: 14px; border-radius: 6px; }
+.reset-btn { background: #f0f2f5; color: #666; border: 1px solid #dcdfe6; padding: 12px; }
 
-input[type="number"],
-input[type="text"] {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  font-size: 1rem;
-}
-
-button {
-  width: 100%;
-  padding: 14px;
-  background-color: #0070ba; /* Match Apple/PayPal feel */
-  color: white;
-  border: none;
-  border-radius: 6px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-button:hover {
-  background-color: #005ea6;
-}
-
-/* Keep your original Toast CSS below */
-.toast {
-  visibility: hidden;
-  min-width: 250px;
-  margin-left: -125px;
-  color: #fff;
-  text-align: center;
-  border-radius: 4px;
-  padding: 16px;
-  position: fixed;
-  z-index: 999;
-  left: 50%;
-  bottom: 0;
-  opacity: 0;
-}
-/* ... rest of your original toast code ... */
+/* Right Panel States */
+.placeholder-text { color: #aaa; text-align: center; margin-top: 180px; font-style: italic; }

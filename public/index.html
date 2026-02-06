@@ -1,23 +1,33 @@
 <div class="container">
-    <div id="config-view">
-        <h3>Payment Configuration</h3>
-        <div class="input-group">
-            <label>Amount (Minor Units, e.g., 1000 = 10.00)</label>
-            <input type="number" id="input-amount" value="10626">
+    <h1>Test Flow Integration</h1>
+    
+    <div class="main-wrapper">
+        <div id="config-view" class="side-panel">
+            <h3>Configuration</h3>
+            <div class="input-group">
+                <label>Amount (Minor Units)</label>
+                <input type="number" id="input-amount" value="10626">
+            </div>
+            <div class="input-group">
+                <label>Currency</label>
+                <input type="text" id="input-currency" value="GBP">
+            </div>
+            <div class="input-group">
+                <label>Country Code</label>
+                <input type="text" id="input-country" value="GB">
+            </div>
+            
+            <div class="button-group">
+                <button type="button" id="checkout-trigger" onclick="initializeCheckout()">Checkout</button>
+                <button type="button" class="reset-btn" onclick="location.reload()">Reset</button>
+            </div>
         </div>
-        <div class="input-group">
-            <label>Currency (ISO Code)</label>
-            <input type="text" id="input-currency" value="GBP" maxlength="3">
-        </div>
-        <div class="input-group">
-            <label>Country Code (ISO 2-char)</label>
-            <input type="text" id="input-country" value="GB" maxlength="2">
-        </div>
-        <button type="button" onclick="initializeCheckout()">Load Payment Methods</button>
-    </div>
 
-    <div id="checkout-view" class="hidden">
-        <div id="flow-container"></div>
-        <button type="button" onclick="location.reload()" style="background:gray; margin-top:10px;">Change Config</button>
+        <div id="checkout-view" class="side-panel">
+            <h3>Available Methods</h3>
+            <div id="flow-container">
+                <p class="placeholder-text">Enter details and click Checkout to see available payment methods.</p>
+            </div>
+        </div>
     </div>
 </div>
