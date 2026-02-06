@@ -5,12 +5,10 @@ const app = express();
 app.use(express.static("public"));
 app.use(express.json());
 
-// Set this in Render's "Environment Variables" section
 const SECRET_KEY = process.env.CHECKOUT_SECRET_KEY;
 
 app.post("/create-payment-sessions", async (req, res) => {
   const { amount, currency, country, reference } = req.body;
-  // Hardcoded Base URL for your specific Render deployment
   const baseUrl = "https://flow-webservice-hns0.onrender.com";
 
   try {
@@ -23,19 +21,18 @@ app.post("/create-payment-sessions", async (req, res) => {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          amount: parseInt(amount), 
-          currency: currency.toUpperCase(),
-          reference: reference, // Use the dynamic reference from the frontend,
+          amount: parseInt(amount) || 0, // Ensure it's a number
+          currency: (currency || "GBP").toUpperCase(),
+          reference: reference || "REF-Default", // Fallback if empty
           billing: {
             address: {
-              country: country.toUpperCase(), 
+              country: (country || "GB").toUpperCase(), 
             },
           },
           customer: {
             email: "test-user@example.com",
             name: "Test User",
           },
-          // Updated redirect URLs to point to your live domain
           success_url: `${baseUrl}/?status=succeeded`,
           failure_url: `${baseUrl}/?status=failed`,
         }),
@@ -43,10 +40,17 @@ app.post("/create-payment-sessions", async (req, res) => {
     );
 
     const parsedPayload = await request.json();
-    res.status(request.status).send(parsedPayload);
+
+    // CRITICAL: Forward the exact error from Checkout.com to your browser
+    if (!request.ok) {
+      console.error("Checkout.com API rejected the request:", parsedPayload);
+      return res.status(request.status).json(parsedPayload);
+    }
+
+    res.status(request.status).json(parsedPayload);
   } catch (error) {
-    console.error("Session Error:", error);
-    res.status(500).send({ error: "Internal Server Error" });
+    console.error("Server Logic Error:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
