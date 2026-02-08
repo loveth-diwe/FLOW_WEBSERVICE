@@ -23,7 +23,9 @@ app.post("/create-payment-sessions", async (req, res) => {
         body: JSON.stringify({
           amount: parseInt(amount) || 0,
           currency: (currency || "GBP").toUpperCase(),
-          reference: reference || "REF-Default", // Order Reference
+          reference: reference || "REF-Default",
+          // The display_name is shown on the Apple Pay payment sheet
+          display_name: "Loveth Diwe Store", 
           billing: {
             address: {
               country: (country || "GB").toUpperCase(), 
@@ -35,7 +37,7 @@ app.post("/create-payment-sessions", async (req, res) => {
               quantity: 1,
               unit_price: parseInt(amount) || 0,
               total_amount: parseInt(amount) || 0,
-              reference: "sku-guitar-001" // Product SKU
+              reference: "sku-guitar-001"
             }
           ],
           risk: { enabled: true },
