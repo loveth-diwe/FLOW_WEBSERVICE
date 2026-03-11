@@ -30,6 +30,10 @@ window.initializeCheckout = async function() {
       componentOptions: {
         applepay: {
           merchantIdentifier: "merchant.lovethdiwe.sandbox"
+        },
+        // ADDED: PayPal configuration to disable Pay Later
+        paypal: {
+          disableFunding: ['paylater']
         }
       },
       onReady: () => {
